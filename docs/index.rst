@@ -48,6 +48,7 @@ Projects related to MicroPython on the BBC micro:bit include:
     tutorials/direction
     tutorials/storage
     tutorials/network
+    tutorials/radio
     tutorials/next
 
 .. toctree::
@@ -56,12 +57,10 @@ Projects related to MicroPython on the BBC micro:bit include:
 
    microbit_micropython_api.rst
    microbit.rst
-   pin.rst
-   music.rst
-   image.rst
-   compass.rst
    accelerometer.rst
+   ble.rst
    button.rst
+   compass.rst
    display.rst
    i2c.rst
    uart.rst
@@ -70,7 +69,11 @@ Projects related to MicroPython on the BBC micro:bit include:
    os.rst
    random.rst
    neopixel.rst
-   ble.rst
+   pin.rst
+   radio.rst
+   random.rst
+   spi.rst
+   uart.rst
 
 .. toctree::
    :maxdepth: 2
