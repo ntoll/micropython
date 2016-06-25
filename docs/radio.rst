@@ -11,20 +11,19 @@ Functions
 
 .. py:function:: send(message)
 
-    Sends a message, expressed as a string or bytes.
+    Sends a message, expressed as a string or bytes. Sending a string is
+    the equivalent of ``send(bytes(message, 'utf8'))``.
 
-.. py:function:: recv_bytes()
+.. py:function:: receive_bytes()
 
     Receive the next incoming message on the message queue. Returns ``None`` if
     there are no pending messages. Messages are returned as bytes.
 
-.. py:function:: receive(fail=False)
+.. py:function:: receive()
 
     Works in exactly the same way as ``recv_bytes`` but messages are expressed
-    as strings. If the optional ``fail`` argument is ``True``, a ``ValueError``
-    is raised if the incoming message cannot be converted to a string. If the
-    ``fail`` argument is ``False`` (the default) such messages and associated
-    exceptions are silently ignored.
+    as strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
+    ``ValueError`` exception if conversion to string fails.
 
 .. py:function:: config(length=32, queue=3, channel=7, power=0, address=b'uBit\x00', data_rate=radio.RADIO_MODE_MODE_Nrf_1Mbit)
 
@@ -32,7 +31,8 @@ Functions
     default values are sensible.
 
     The ``length`` defines the size, in bytes, of a message sent via the radio.
-    It can be up to 256 (????? CHECK THIS from memory) bytes long.
+    It can be up to 251 bytes long (254 - 3 bytes for S0, LENGTH and S1
+    preamble).
 
     The ``queue`` specifies the number of messages that can be stored on the
     incoming message queue. If there are no spaces left on the queue for
@@ -46,7 +46,9 @@ Functions
 
     The ``power`` is an integer value from 0 to 7 (inclusive) to indicate the
     strength of signal used when broadcasting a message. The higher the value
-    the stronger the signal, but the more power is consumed by the device.
+    the stronger the signal, but the more power is consumed by the device. The
+    numbering translates to positions in the following list of dBm (decibel
+    milliwatt) values: -30, -20, -16, -12, -8, -4, 0, 4.
 
     The ``address`` is an arbitrary name, expressed as bytes, that's used to
     filter incoming packets at the hardware level, keeping only those that
