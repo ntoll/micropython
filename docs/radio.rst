@@ -11,7 +11,7 @@ Functions
 
 .. py:function:: send(message)
 
-    Sends a message, expressed as a string or bytes. Sending a string is
+    Sends a message which, can be a string or bytes. Sending a string is
     the equivalent of ``send(bytes(message, 'utf8'))``.
 
 .. py:function:: receive_bytes()
@@ -21,8 +21,8 @@ Functions
 
 .. py:function:: receive()
 
-    Works in exactly the same way as ``recv_bytes`` but messages are expressed
-    as strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
+    Works in exactly the same way as ``receive_bytes`` but messages are
+    strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
     ``ValueError`` exception if conversion to string fails.
 
 .. py:function:: config(length=32, queue=3, channel=7, power=0, address=b'uBit\x00', data_rate=radio.RADIO_MODE_MODE_Nrf_1Mbit)
@@ -56,14 +56,15 @@ Functions
     platforms is ``b'uBit\x00'``. It must be exactly 5 bytes in length.
 
     The ``data_rate`` indicates the speed at which transmission takes
-    place. Can be one of: ``RADIO_MODE_MODE_Nrf_1Mbit``,
-    ``RADIO_MODE_MODE_Nrf_2Mbit`` or ``RADIO_MODE_MODE_Nrf_250Kbit``.
+    place. Can be one of the following contants defined in the ``radio``
+    module : ``RADIO_MODE_Nrf_1Mbit``, ``RADIO_MODE_Nrf_2Mbit`` or
+    ``RADIO_MODE_Nrf_250Kbit``.
 
     If ``config`` is not called then the defaults described above are assumed.
-    Since these are named arguments with sane defaults, re-setting is as simple
-    as calling ``config()``. Calling with a subset of the named arguments
-    (for example, ``config(power=3)`` will cause all the other settings to
-    default their values.
+    Since these are named arguments with sensible defaults, re-setting is as
+    simple as calling ``config()``. Calling with a subset of the named
+    arguments (for example, ``config(power=3)`` will cause all the other
+    settings to default their values.
 
 .. py:function:: on()
 
