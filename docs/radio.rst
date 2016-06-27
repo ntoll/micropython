@@ -9,10 +9,14 @@ networks.
 Functions
 =========
 
+.. py:function:: send_bytes(message)
+
+    Sends a message containing bytes.
+
 .. py:function:: send(message)
 
-    Sends a message which, can be a string or bytes. Sending a string is
-    the equivalent of ``send(bytes(message, 'utf8'))``.
+    Sends a message string. This is the equivalent of
+    ``send_bytes(bytes(message, 'utf8'))``.
 
 .. py:function:: receive_bytes()
 
@@ -21,7 +25,7 @@ Functions
 
 .. py:function:: receive()
 
-    Works in exactly the same way as ``receive_bytes`` but messages are
+    Works in exactly the same way as ``receive_bytes`` but returns
     strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
     ``ValueError`` exception if conversion to string fails.
 
