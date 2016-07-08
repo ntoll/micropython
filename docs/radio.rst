@@ -6,30 +6,35 @@ Radio
 The ``radio`` module allows devices to work together via simple wireless
 networks.
 
+Constants
+=========
+
+.. py:attribute:: RATE_250Kbit
+
+    Constant used to indicate a throughput of 256 Kbit a second.
+
+.. py:attribute:: RATE_1Mbit
+
+    Constant used to indicate a throughput of 1 MBit a second.
+
+.. py:attribute:: RATE_2Mbit
+
+    Constant used to indicate a throughput of 2 MBit a second.
+
+
 Functions
 =========
 
-.. py:function:: send_bytes(message)
+.. py:function:: on()
 
-    Sends a message containing bytes.
+    Turns the radio on. This needs to be explicitly called since the radio
+    draws power and takes up memory that you may otherwise need.
 
-.. py:function:: send(message)
+.. py:function:: off()
 
-    Sends a message string. This is the equivalent of
-    ``send_bytes(bytes(message, 'utf8'))``.
+    Turns off the radio, thus saving power and memory.
 
-.. py:function:: receive_bytes()
-
-    Receive the next incoming message on the message queue. Returns ``None`` if
-    there are no pending messages. Messages are returned as bytes.
-
-.. py:function:: receive()
-
-    Works in exactly the same way as ``receive_bytes`` but returns
-    strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
-    ``ValueError`` exception if conversion to string fails.
-
-.. py:function:: config(length=32, queue=3, channel=7, power=0, address=b'uBit\x00', data_rate=radio.RADIO_MODE_MODE_Nrf_1Mbit)
+.. py:function:: config(length=32, queue=3, channel=7, power=0, address=b'uBit\x00', data_rate=radio.RATE_1Mbit)
 
     Configures the various settings relating to the radio. The specified
     default values are sensible.
@@ -59,10 +64,9 @@ Functions
     match the address you set. The default used by other micro:bit related
     platforms is ``b'uBit\x00'``. It must be exactly 5 bytes in length.
 
-    The ``data_rate`` indicates the speed at which transmission takes
+    The ``data_rate`` indicates the speed at which data throughput takes
     place. Can be one of the following contants defined in the ``radio``
-    module : ``RADIO_MODE_Nrf_1Mbit``, ``RADIO_MODE_Nrf_2Mbit`` or
-    ``RADIO_MODE_Nrf_250Kbit``.
+    module : ``RATE_250Kbit``, ``RATE_1Mbit`` (the default)  or ``RATE_2Mbit``.
 
     If ``config`` is not called then the defaults described above are assumed.
     Since these are named arguments with sensible defaults, re-setting is as
@@ -70,14 +74,30 @@ Functions
     arguments (for example, ``config(power=3)`` will cause all the other
     settings to default their values.
 
-.. py:function:: on()
+.. note::
 
-    Turns the radio on. This needs to be explicitly called since the radio
-    draws power and takes up memory that you may otherwise need.
+    None of the following send or receive methods will work until the radio is
+    turned on.
 
-.. py:function:: off()
+.. py:function:: send_bytes(message)
 
-    Turns off the radio, thus saving power and memory.
+    Sends a message containing bytes.
+
+.. py:function:: receive_bytes()
+
+    Receive the next incoming message on the message queue. Returns ``None`` if
+    there are no pending messages. Messages are returned as bytes.
+
+.. py:function:: send(message)
+
+    Sends a message string. This is the equivalent of
+    ``send_bytes(bytes(message, 'utf8'))``.
+
+.. py:function:: receive()
+
+    Works in exactly the same way as ``receive_bytes`` but returns
+    strings. Equivalent to ``str(receive_bytes(), 'utf8')``. Will raise a
+    ``ValueError`` exception if conversion to string fails.
 
 Examples
 --------

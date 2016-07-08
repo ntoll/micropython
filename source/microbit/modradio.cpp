@@ -33,6 +33,35 @@ extern "C" {
 #include "py/runtime.h"
 #include "microbitobj.h"
 
+#define RADIO_MODE_Nrf_250Kbit = 0 // Transmission at 250kbit/s
+#define RADIO_MODE_Nrf_1Mbit = 1 // Transmission at 1Mbit/s
+#define RADIO_MODE_Nrf_2Mbit = 2 // Transmission at 2Mbit/s
+#define DEFAULT_LENGTH = 32
+#define DEFAULT_QUEUE  = 3
+#define DEFAULT_CHANNEL = 7
+#define DEFAULT_POWER = 0
+#define DEFAULT_ADDRESS = 0x75626974
+
+
+typedef struct _radio_state_t {
+    uint8_t length; // The size, in bytes, of a message.
+    uint8_t queue; // Number of messages to store on the incoming queue
+    uint8_t channel; // Default channel to which the radio is tuned
+    uint8_t power; // Strength of signal for broadcasting messages
+    uint32_t address; // Radio name used to filter packets
+    uint8_t rate; // Rate of data throughput
+} radio_state_t;
+
+static radio_state_t radio_state = {
+    .length = DEFAULT_LENGTH,
+    .queue = DEFAULT_QUEUE,
+    .channel = DEFAULT_CHANNEL,
+    .power = DEFAULT_POWER,
+    .address = DEFAULT_ADDRESS,
+    .rate = RADIO_MODE_Nrf_1Mbit,
+};
+
+
 static uint8_t *buf_start = NULL; // NULL when radio is disabled.
 static uint8_t *buf_end = NULL;
 static uint8_t *rx_buf = NULL;
@@ -214,29 +243,29 @@ void radio_send(const uint8_t *buf, size_t len) {
 /*****************************************************************************/
 // MicroPython bindings and module
 
-STATIC mp_obj_t mod_radio_enable(mp_obj_t max_payload_in, mp_obj_t queue_len_in) {
+STATIC mp_obj_t mod_radio_on(mp_obj_t max_payload_in, mp_obj_t queue_len_in) {
     mp_int_t max_payload = mp_obj_get_int(max_payload_in);
     mp_int_t queue_len = mp_obj_get_int(queue_len_in);
     radio_enable(max_payload, queue_len);
     return mp_const_none;
 }
-MP_DEFINE_CONST_FUN_OBJ_2(mod_radio_enable_obj, mod_radio_enable);
+MP_DEFINE_CONST_FUN_OBJ_2(mod_radio_on_obj, mod_radio_on);
 
-STATIC mp_obj_t mod_radio_disable(void) {
+STATIC mp_obj_t mod_radio_off(void) {
     radio_disable();
     return mp_const_none;
 }
-MP_DEFINE_CONST_FUN_OBJ_0(mod_radio_disable_obj, mod_radio_disable);
+MP_DEFINE_CONST_FUN_OBJ_0(mod_radio_off_obj, mod_radio_off);
 
-STATIC mp_obj_t mod_radio_send(mp_obj_t buf_in) {
+STATIC mp_obj_t mod_radio_send_bytes(mp_obj_t buf_in) {
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(buf_in, &bufinfo, MP_BUFFER_READ);
     radio_send((const uint8_t*)bufinfo.buf, bufinfo.len);
     return mp_const_none;
 }
-MP_DEFINE_CONST_FUN_OBJ_1(mod_radio_send_obj, mod_radio_send);
+MP_DEFINE_CONST_FUN_OBJ_1(mod_radio_send_bytes_obj, mod_radio_send_bytes);
 
-STATIC mp_obj_t mod_radio_recv(void) {
+STATIC mp_obj_t mod_radio_receive_bytes(void) {
     ensure_enabled();
     NVIC_DisableIRQ(RADIO_IRQn);
     uint8_t *buf = buf_start + (NRF_RADIO->PCNF1 & 0xff) + 1; // skip tx buf
@@ -254,14 +283,25 @@ STATIC mp_obj_t mod_radio_recv(void) {
     NVIC_EnableIRQ(RADIO_IRQn);
     return ret;
 }
-MP_DEFINE_CONST_FUN_OBJ_0(mod_radio_recv_obj, mod_radio_recv);
+MP_DEFINE_CONST_FUN_OBJ_0(mod_radio_receive_bytes_obj, mod_radio_receive_bytes);
+
+STATIC mp_obj_t mod_radio_send(const char* str) {
+    // Convert to bytes
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_1(mod_radio_send_obj, mod_radio_send);
+
+STATIC mp_onf_t mod_radio_receive(void) {
+    // Get result and return as string (or raise ValueError)
+}
+MP_DEFINE_CONST_FUN_OBJ_0(mod_radio_receive_obj, mod_radio_receive)
 
 STATIC const mp_map_elem_t radio_module_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_radio) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_enable), (mp_obj_t)&mod_radio_enable_obj },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_disable), (mp_obj_t)&mod_radio_disable_obj },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_send), (mp_obj_t)&mod_radio_send_obj },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_recv), (mp_obj_t)&mod_radio_recv_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_enable), (mp_obj_t)&mod_radio_on_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_disable), (mp_obj_t)&mod_radio_off_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_send), (mp_obj_t)&mod_radio_send_bytes_obj },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_recv), (mp_obj_t)&mod_radio_receive_bytes_obj },
 };
 
 STATIC MP_DEFINE_CONST_DICT(radio_module_globals, radio_module_globals_table);
