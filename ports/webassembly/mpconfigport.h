@@ -35,8 +35,7 @@
 #include "mpconfigvariant.h"
 
 // Whether the build links with Emscripten JSPI (JavaScript Promise
-// Integration) support, enabling jsffi.run_sync() to suspend.  Set by
-// the jspi variant; see variants/jspi/.
+// Integration) support, enabling jsffi.run_sync() to suspend.
 #ifndef MICROPY_JSPI
 #define MICROPY_JSPI (0)
 #endif

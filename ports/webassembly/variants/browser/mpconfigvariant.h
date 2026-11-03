@@ -1,7 +1,7 @@
 /*
  * This file is part of the MicroPython project, http://micropython.org/
  * The MIT License (MIT)
- * Copyright (c) 2025 MicroPython contributors
+ * Copyright (c) 2026 MicroPython contributors
  */
 
 // The browser variant: full features, the split heap (whose call depth

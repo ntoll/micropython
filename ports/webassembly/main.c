@@ -83,10 +83,10 @@ void external_call_depth_dec(mp_obj_t root_obj) {
 // fact that a continuation is currently parked, so that a second,
 // overlapping promising entry cannot create a second suspension; two
 // parked continuations would interleave frames on the shared linear
-// stack and corrupt it when resumed out of order.  Note the jspi
-// variant enables MICROPY_GC_SPLIT_HEAP_AUTO, which both maintains
-// external_call_depth and defers garbage collection to depth zero, so
-// no collection can run while a suspension is parked.
+// stack and corrupt it when resumed out of order.  If
+// MICROPY_GC_SPLIT_HEAP_AUTO is enabled, maintain external_call_depth
+// and defer garbage collection to depth zero, so no collection can run
+// while a suspension is parked.
 static size_t suspendable_entry_depth = 0;
 static bool suspension_active = false;
 
@@ -227,10 +227,10 @@ void mp_js_do_exec(const char *src, size_t len, uint32_t *out) {
 void mp_js_do_exec_async(const char *src, size_t len, uint32_t *out) {
     mp_compile_allow_top_level_await = true;
     #if MICROPY_JSPI
-    // This entry is wrapped in WebAssembly.promising by the build (see
-    // JSPI_EXPORTS in the jspi variant), so suspension is legal while
-    // execution remains at this entry's depth.  mp_js_do_exec() never
-    // raises out of this frame, so plain save/restore suffices.
+    // If this entry is wrapped in WebAssembly.promising by the build
+    // (see JSPI_EXPORTS), suspension is legal while execution remains at
+    // this entry's depth.  mp_js_do_exec() never raises out of this
+    // frame, so plain save/restore suffices.
     size_t prev_depth = suspendable_entry_depth;
     suspendable_entry_depth = external_call_depth + 1;
     #endif

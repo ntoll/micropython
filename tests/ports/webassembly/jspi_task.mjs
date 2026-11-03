@@ -1,7 +1,8 @@
-// Test jsffi.run_sync() inside asyncio tasks.  The asyncio loop runs
-// through callPromising(), so a task may suspend; while it is suspended
-// the loop waits, and other tasks run once it resumes.  Requires a jspi
-// build on a JSPI-capable engine; skips otherwise.
+// Test jsffi.run_sync() inside asyncio tasks.  The asyncio loop body is
+// an async def, so JS resumes it as a generator and it may suspend;
+// while it is suspended the loop waits, and other tasks run once it
+// resumes.  Requires a jspi build on a JSPI-capable engine; skips
+// otherwise.
 
 const mp = await (await import(process.argv[2])).loadMicroPython();
 
