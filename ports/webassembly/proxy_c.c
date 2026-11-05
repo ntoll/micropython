@@ -576,7 +576,11 @@ static mp_obj_t proxy_resume_execute(mp_obj_t self_in, mp_obj_t send_value, mp_o
             create_promise(out_set, out_promise);
             ret_value = proxy_convert_js_to_mp_obj_cside(out_promise);
         }
-
+        // A yielded value that is not a JS proxy cannot be awaited; raise
+        // TypeError rather than read a ref from an object that has none.
+        if (!mp_obj_is_jsproxy(ret_value)) {
+            mp_raise_TypeError(MP_ERROR_TEXT("can't await a non-JS object"));
+        }
         int ref = mp_obj_jsproxy_get_ref(ret_value);
         uint32_t out_thenable[PVN];
         uint32_t out_resolve[PVN];
