@@ -7,9 +7,8 @@ FROZEN_MANIFEST ?= variants/browser/manifest.py
 
 # The emscripten longjmp mode's JS invoke_* trampolines are
 # incompatible with JSPI suspension, so use native wasm exceptions for
-# longjmp at both compile and link time.
+# longjmp instead (the Makefile applies this at compile and link time).
 SUPPORT_LONGJMP = wasm
-CFLAGS += -sSUPPORT_LONGJMP=wasm
 
 JSFLAGS += -s JSPI
 # The promising entries: runPythonAsync(), the generator resume used

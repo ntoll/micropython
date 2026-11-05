@@ -96,6 +96,7 @@ JSFLAGS += --js-library library.js
 # because the JS invoke_* trampolines used by the emscripten mode are
 # incompatible with JSPI stack suspension.
 SUPPORT_LONGJMP ?= emscripten
+CFLAGS += -s SUPPORT_LONGJMP=$(SUPPORT_LONGJMP)
 JSFLAGS += -s SUPPORT_LONGJMP=$(SUPPORT_LONGJMP)
 JSFLAGS += -s MODULARIZE -s EXPORT_NAME=_createMicroPythonModule
 
